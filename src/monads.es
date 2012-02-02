@@ -704,7 +704,7 @@ module monads {
             case 'string':
               ele = document.getElementById(selectItem);
               if (!ele) {
-                var elements = require('monads').Selectable([selectItem]).elements();
+                var elements = Selectable([selectItem]).elements();
                 if (elements && elements.length > 0) {
                   ele = elements[0];
                 }
@@ -1558,8 +1558,6 @@ module monads {
         log.Logger.error(this,e);
       }
     }
-    init() {
-    }
   }
   export class Moveable extends DOMable {
     constructor(properties={}) {
@@ -1567,8 +1565,8 @@ module monads {
       try {
         if (properties) {
           DOMable.call(this, {id:properties.target});
-          source = require('monads').Selectable([properties.source || properties.target]).elements()[0];
-          this.continuationConstructor = require('monads').MoveContinuation;
+          source = Selectable([properties.source || properties.target]).elements()[0];
+          this.continuationConstructor = MoveContinuation;
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -1678,8 +1676,8 @@ module monads {
       private source;
       if (properties) {
         DOMable.call(this, {id:properties.target});
-        source = require('monads').Selectable([properties.source || properties.target]).elements()[0];
-        this.continuationConstructor = require('monads').ResizeContinuation;
+        source = Selectable([properties.source || properties.target]).elements()[0];
+        this.continuationConstructor = ResizeContinuation;
       }
       return this;      
     }
@@ -1807,9 +1805,9 @@ module monads {
         @targetMap = {};
         if(selector) {
           this.selectors = [selector.source];
-          this.selector = require('monads').Selectable(this.selectors);
+          this.selector = Selectable(this.selectors);
           this.targets = [selector.target];
-          this.target = require('monads').Selectable(this.targets);
+          this.target = Selectable(this.targets);
           this.target.forEach(function(highlightable){
             this.targetMap[highlightable.id] = highlightable;
           }, this);
@@ -1974,8 +1972,8 @@ module monads {
           DOMable.call(this, {element:properties.source});
         }
       } 
-      this.target = require('monads').Selectable([properties.target]);
-      this.continuationConstructor = (properties.direction && properties.direction === "horizontal") ? require('monads').SlideHorizontalContinuation: require('monads').SlideVerticalContinuation;
+      this.target = Selectable([properties.target]);
+      this.continuationConstructor = (properties.direction && properties.direction === "horizontal") ? SlideHorizontalContinuation: SlideVerticalContinuation;
     }
   }
   export class SlideVerticalContinuation extends DOMContinuation {
@@ -2139,9 +2137,9 @@ module monads {
       private source;
       DOMable.call(this, {id:properties.target});
       source = Selectable([properties.source || properties.target]).elements()[0];
-      this.continuationConstructor = require('monads').SwipeContinuation;
+      this.continuationConstructor = SwipeContinuation;
     }
-    init() {
+    static init = (function() {
       try {
         if (utilities.Environment.webkit) {
           var styles = [
@@ -2150,12 +2148,12 @@ module monads {
             {selector:"Swipeable-right",style:"-webkit-animation-name:swipe-right;-webkit-animation-duration:2s;"},
             {selector:"@-webkit-keyframes swipe-right",style:'from {left:0px;} to {left:300px;}'}
           ];
-          require('monads').Styleable(styles).on("load").style();
+          Styleable(styles).on("load").style();
         }
       } catch(e) {
         log.Logger.error(this,e);
       }             
-    }      
+    })()      
   }
   export class SwipeContinuation extends DOMContinuation {
     constructor(properties={}) {
@@ -2285,22 +2283,22 @@ module monads {
     constructor(properties={}) {
       private source;
       DOMable.call(this, {id:properties.target});
-      source = require('monads').Selectable([properties.source || properties.target]).elements()[0];
-      this.continuationConstructor = require('monads').TouchContinuation;
+      source = Selectable([properties.source || properties.target]).elements()[0];
+      this.continuationConstructor = TouchContinuation;
     }
-    init() {
+    static init = (function() {
       try { 
         if (utilities.Environment.webkit) {
           var styles = [
             {selector:'Touchable',style:'-webkit-animation-name:"slide-me-to-the-right";-webkit-animation-duration:1s;'},
             {selector:'@-webkit-keyframes "slide-me-to-the-right"',style:'from { left: 0px; } to { left: 100px; }'}
           ];
-          require('monads').Styleable(styles).on("load").style();
+          Styleable(styles).on("load").style();
         }
       } catch(e) {
         log.Logger.error(this,e);
       }             
-    }      
+    })()      
   }
   export class TouchContinuation extends DOMContinuation {
     constructor(properties={}) {
@@ -2402,7 +2400,7 @@ module monads {
       @back = null;
       @continuationConstructor = FlippableContinuation;
     }
-    init() {
+    static init = (function() {
       try {
         if (utilities.Environment.webkit) {
           var styles = [
@@ -2417,7 +2415,7 @@ module monads {
       } catch(e) {
         log.Logger.error(this,e);
       }
-    }            
+    })()            
   }
   export class FlippableContinuation extends DOMContinuation {
     constructor(properties={}) {
