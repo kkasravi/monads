@@ -1566,7 +1566,7 @@ module monads {
         if (properties) {
           DOMable.call(this, {id:properties.target});
           source = Selectable([properties.source || properties.target]).elements()[0];
-          this.continuationConstructor = MoveContinuation;
+          @continuationConstructor = MoveContinuation;
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -1677,7 +1677,7 @@ module monads {
       if (properties) {
         DOMable.call(this, {id:properties.target});
         source = Selectable([properties.source || properties.target]).elements()[0];
-        this.continuationConstructor = ResizeContinuation;
+        @continuationConstructor = ResizeContinuation;
       }
       return this;      
     }
@@ -1812,7 +1812,7 @@ module monads {
             this.targetMap[highlightable.id] = highlightable;
           }, this);
         }
-        this.continuationConstructor = HighlightContinuation;
+        @continuationConstructor = HighlightContinuation;
       } catch (e) {
         log.Logger.error(this,e);
       }
@@ -1972,8 +1972,8 @@ module monads {
           DOMable.call(this, {element:properties.source});
         }
       } 
-      this.target = Selectable([properties.target]);
-      this.continuationConstructor = (properties.direction && properties.direction === "horizontal") ? SlideHorizontalContinuation: SlideVerticalContinuation;
+      @target = Selectable([properties.target]);
+      @continuationConstructor = (properties.direction && properties.direction === "horizontal") ? SlideHorizontalContinuation: SlideVerticalContinuation;
     }
   }
   export class SlideVerticalContinuation extends DOMContinuation {
@@ -2136,8 +2136,8 @@ module monads {
     constructor(properties={}) {
       private source;
       DOMable.call(this, {id:properties.target});
-      source = Selectable([properties.source || properties.target]).elements()[0];
-      this.continuationConstructor = SwipeContinuation;
+      @source = Selectable([properties.source || properties.target]).elements()[0];
+      @continuationConstructor = SwipeContinuation;
     }
     static init = (function() {
       try {
@@ -2283,8 +2283,8 @@ module monads {
     constructor(properties={}) {
       private source;
       DOMable.call(this, {id:properties.target});
-      source = Selectable([properties.source || properties.target]).elements()[0];
-      this.continuationConstructor = TouchContinuation;
+      @source = Selectable([properties.source || properties.target]).elements()[0];
+      @continuationConstructor = TouchContinuation;
     }
     static init = (function() {
       try { 
