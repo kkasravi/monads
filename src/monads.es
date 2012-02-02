@@ -452,8 +452,9 @@ module monads {
     }       
     addStyle(selector, style) {
       try {
+        var cssStr;
         if (typeof(document) !== 'undefined' && !StyleContinuation.styleMap[selector]) {
-          var cssStr = selector + " {" + style + "}";
+          cssStr = selector + " {" + style + "}";
           var styleElement = document.createElement("style");
           styleElement.setAttribute("type", "text/css");
           if (styleElement.styleSheet) {
@@ -465,6 +466,14 @@ module monads {
           var head = document.getElementsByTagName("head")[0];
           head.appendChild(styleElement);
           StyleContinuation.styleMap[selector] = styleElement;
+        } else {
+          cssStr = selector + " {" + style + "}"; 
+          if (StyleContinuation.styleMap[selector].styleSheet) {
+            StyleContinuation.styleMap[selector].styleSheet.cssText += ' ' + cssStr;
+          } else {
+            var cssText = document.createTextNode(cssStr);
+            StyleContinuation.styleMap[selector].appendChild(cssText);
+          }
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -2148,7 +2157,7 @@ module monads {
             {selector:"Swipeable-right",style:"-webkit-animation-name:swipe-right;-webkit-animation-duration:2s;"},
             {selector:"@-webkit-keyframes swipe-right",style:'from {left:0px;} to {left:300px;}'}
           ];
-          Styleable(styles).on("load").style();
+          Styleable(styles).on("load").onstyle();
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -2293,7 +2302,7 @@ module monads {
             {selector:'Touchable',style:'-webkit-animation-name:"slide-me-to-the-right";-webkit-animation-duration:1s;'},
             {selector:'@-webkit-keyframes "slide-me-to-the-right"',style:'from { left: 0px; } to { left: 100px; }'}
           ];
-          Styleable(styles).on("load").style();
+          Styleable(styles).on("load").onstyle();
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -2410,7 +2419,7 @@ module monads {
             {selector:'.monads-Flippable-Face',style:'position:absolute;height:300px;width:320px;left:0;top:0;-webkit-backface-visibility:hidden;'},
             {selector:'.monads-Flippable-Flipped',style:'-webkit-transform:rotateY(179deg);'}
           ];
-          Styleable(styles).on("load").style();
+          Styleable(styles).on("load").onstyle();
         }
       } catch(e) {
         log.Logger.error(this,e);
