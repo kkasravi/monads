@@ -401,10 +401,10 @@ module monads {
     }    
   }  
   export class Styleable extends Monad {
-    constructor(properties={}) {
+    constructor(styles=[]) {
       private styles;
       Monad.call(this);
-      @styles = properties.styles || [];
+      @styles = styles;
       @continuationConstructor = StyleContinuation;   
     }
   }
@@ -534,7 +534,23 @@ module monads {
     }
     add(eid) {
       try {
-        var ele = (typeof(eid) === 'string') ? DOMable({id:eid}).on('load').element(): eid;
+        var ele;
+        switch(typeof(eid)) {
+          case 'string':
+            ele = DOMable({id:eid}).on('load').element();
+            break;
+          default:
+            if(eid.element) {
+              if(typeof(eid.element) === 'function') {
+                ele = eid.element();
+              } else {
+                ele = eid.element;
+              }
+            } else {
+              ele = eid;
+            }
+            break;
+        }
         if(!!ele.parentNode) {
           ele.parentNode.removeChild(ele);  
         } 
@@ -591,20 +607,7 @@ module monads {
         if (attrs.hasOwnProperty(attr)) {
           try {
             if (@monad && @monad.element) {
-              switch(attr) {
-                case 'className':
-                  @monad.element[attr] = attrs[attr];
-                  if(typeof(@monad['set'+attr.typeCase()])==='function') {
-                    @monad['set'+attr.typeCase()](attrs[attr]);
-                  }
-                  break;
-                default:
-                  this.element()[attr] = attrs[attr];
-                  if(typeof(@monad['set'+attr.typeCase()])==='function') {
-                    @monad['set'+attr.typeCase()](attrs[attr]);
-                  }
-                  break;
-              }
+              @monad.element.setAttribute(attr,attrs[attr]);
             }
           } catch (e) {
             log.Logger.error(this,e);
@@ -1360,6 +1363,7 @@ module monads {
         var style = [], properties = props || {};
         properties.x && style.push('translateX('+properties.x+')');
         properties.y && style.push(' translateY('+properties.y+')');
+        properties.z && style.push(' translateZ('+properties.z+')');
         style = style.join(' ');
         if(utilities.Environment.webkit) {
           this.style({'-webkit-transform':style});
@@ -1538,6 +1542,11 @@ module monads {
           @element = this.selector.elements().length && this.selector.elements()[0];                 
           @id = @element.id;
           @className = @element.className;
+        } else if(properties.object && properties.object.element) {           
+          Monad.call(this);                            
+          @element = properties.object.element;                                  
+          @id = (@element.id || Math.uuid(8));
+          @className = (@element.className || properties.className);
         } else if(properties.element) {           
           Monad.call(this);                            
           @element = properties.element;                                  

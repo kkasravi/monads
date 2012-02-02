@@ -133,7 +133,7 @@ module utilities {
       return ("#" + hex);
     }
   }
-  class ColorType {
+  class Deque {
     constructor() {
       private stack;
       @stack = [];
