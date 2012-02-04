@@ -673,6 +673,21 @@ module monads {
       }            
       return items;          
     }
+    computed(prop) {
+      try {
+        var computedValue;
+        if (this.element().currentStyle) {
+          computedValue = this.element().currentStyle[prop];
+        } else if (document.defaultView && document.defaultView.getComputedStyle) {
+          computedValue = document.defaultView.getComputedStyle(this.element(), "")[prop];
+        } else {
+          computedValue = this.element().style[prop];
+        }
+        return computedValue;
+      } catch (e) {
+        log.Logger.error(this,e);
+      }
+    }        
     context() {
       return @monad;
     }
@@ -1161,6 +1176,23 @@ module monads {
       classList.length ? this.attributes({className: classList}) : this.element().removeAttribute('class');
       return this;
     }
+    rotate(props) {
+      try {
+        var style = [], properties = props || {};
+        properties.x && style.push('rotateX('+properties.x+'deg)');
+        properties.y && style.push(' rotateY('+properties.y+'deg)');
+        properties.z && style.push(' rotateZ('+properties.z+'deg)');
+        style = style.join(' ');
+        if(utilities.Environment.webkit) {
+          this.style({'-webkit-transform':style});
+        } else if(utilities.Environment.firefox) {
+          this.style({'MozTransform':style});
+        }
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+      return this;
+    }
     round(radius) {
       if (utilities.Environment.firefox) {                
         switch (arguments.length) {
@@ -1316,21 +1348,6 @@ module monads {
     styleColor(value) {
       return this.styleProperty("color", value) || "transparent";
     }
-    styleComputedProperty(prop) {
-      try {
-        var computedValue;
-        if (this.element().currentStyle) {
-          computedValue = this.element().currentStyle[prop];
-        } else if (document.defaultView && document.defaultView.getComputedStyle) {
-          computedValue = document.defaultView.getComputedStyle(this.element(), "")[prop];
-        } else {
-          computedValue = this.element().style[prop];
-        }
-        return computedValue;
-      } catch (e) {
-        log.Logger.error(this,e);
-      }
-    }        
     styleDisplay(value) {
       return this.styleProperty(@monad.element.currentStyle.display.toLowerCase() == 'block' ? 'block' : 'inline-block', value);
     }
@@ -1390,8 +1407,8 @@ module monads {
         var property = properties.property;
         var time = properties.time || '0.4s';
         var timingfunc = properties.timingfunc || 'ease-in';
-        if(!this.getTransitions()[property]) {
-          this.getTransitions()[property] = true;
+        if(!@transitions[property]) {
+          @transitions[property] = true;
           if(utilities.Environment.webkit) {
             var webkitStyle = (properties.noprefix ? '' : '-webkit-')+property+' '+time+' '+(timingfunc||'ease');
             this.style({'-webkit-transition':webkitStyle});
