@@ -573,7 +573,7 @@ module monads {
       try {
         var current = typeof @monad.element.className === 'string'? @monad.element.className.split(' ') : [];
         current.push(className);
-        this.attributes({className:(current.length === 1 ? current.join('') : current.join(' '))});
+        this.attributes({'class':(current.length === 1 ? current.join('') : current.join(' '))});
       } catch(e) {
         log.Logger.error(this,e);
       }
