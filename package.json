@@ -1,12 +1,13 @@
 {
   "name"          : "monads",
+  "version"       : "0.1",
   "description"   : "monad like types in a variant of es.next",
   "url"           : "http://kkasravi.github.com/monads.git",
   "keywords"      : ["monads", "functional", "es.next"],
   "author"        : "Kam Kasravi <kkasravi@yahoo.com>",
-  "contributors"  : [],
-  "dependencies"  : {require},
-  "lib"           : ".",
-  "main"          : "monads.es",
-  "version"       : "0.1"
+  "dependencies"  : {
+    "require": "*"
+  },
+  "lib"           : "./lib",
+  "main"          : "./lib/monads.js"
 }
