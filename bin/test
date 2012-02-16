@@ -1,8 +1,10 @@
 #!/bin/ksh
+cwd=$(pwd)
 for i in test/*.es;
 do
 cd ~/transpiler
 a=${i##*/}
 b=${a%.es}.js
-bin/transpiler ~/monads/$i > ~/monads/test/$b
+echo ${cwd}/$i
+bin/transpiler ${cwd}/$i > ${cwd}/test/$b
 done

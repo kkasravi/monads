@@ -133,6 +133,73 @@ module utilities {
       return ("#" + hex);
     }
   }
+  export class Stack {
+    constructor(obj) {
+      private queue, count;
+      try {
+        this.clear();
+        if (obj) {
+          this.push(obj);
+        }
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+    clear() {
+      @queue = [];
+      @count = @queue.length;
+      return this;
+    }
+    contains(obj) {
+      for (var i = 0; i < @queue.length; i++) {
+        if (@queue[i] == obj) {
+          return true;
+        }
+      }
+      return false;
+    }
+    copyTo(arr, i) {
+      arr.splice(i, 0, @queue);
+    }
+    forEach(fn, scope) {
+      var s = scope;
+      if (Array.forEach) {
+        Array.forEach(@queue, fn, s);
+      } else {
+        for (var i = 0; i < @queue.length; i++) {
+          fn.call(s, @queue[i], i, @queue);
+        }
+      }
+    }
+    peek(index) {
+      return @queue[index];
+    }
+    depth() {
+      return @count;
+    }
+    pop() {
+      var r = @queue.pop();
+      @count = @queue.length;
+      return r;
+    }
+    isEmpty() {
+      return @count === 0;
+    }
+    push(o) {
+      @queue.push(o);
+      @count = @queue.length;
+      return this;
+    }
+    top() {
+      return @queue[(@queue.length - 1)];
+    }
+    bottom() {
+      return @queue[0];
+    }
+    toArray() {
+      return [].concat(@queue);
+    }
+  }
   class Deque {
     constructor() {
       private stack;

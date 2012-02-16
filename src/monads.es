@@ -2492,14 +2492,14 @@ module monads {
       }
     }
     addComposable(name, composable) {
-      var map = this.getComposablesMap();
+      var map = @composablesMap;
       if(!map[name]) {
         map[name] = @composable;
       }
       return this;
     }
     getComposable(name) {
-      var map = this.getComposablesMap();
+      var map = @composablesMap;
       return map[name];
     }        
     lift(monoid) {
