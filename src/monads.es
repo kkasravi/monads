@@ -1445,6 +1445,9 @@ module monads {
     }
     textShadow(v) {
       var value = v || '1px 1px 1px #FFF';
+      if(value.length) {
+        value = value.join(',');
+      }
       @monad.element.style.textShadow = value;
       return this;
     }      
