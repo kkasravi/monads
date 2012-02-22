@@ -343,13 +343,9 @@ module monads {
       return @monad;
     }
     delay(cps,args,ms) {
-      try {
-        var self = this;
-        args = args.length ? args : [args];
-        setTimeout(function(){cps.apply(self,args);},ms);
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
+      var self = this;
+      var vargs = (args && args.length) ? args : [];
+      setTimeout(function(){cps.apply(self,vargs);},ms);
       return this;
     }
     on(evt){
@@ -719,6 +715,32 @@ module monads {
     }
     exists() {
       return !!@monad.element;
+    }
+    fadein(props) {
+      try {
+        var properties = props || {};
+        var opacity = properties.opacity || '1';
+        var duration = properties.duration || '0.4s';
+        var timingfunc = properties.timingfunc || 'ease-in-out';
+        this.transition({property:'opacity',duration:duration,timingfunc:timingfunc});
+        this.style({opacity:opacity});
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+      return this;
+    }
+    fadeout(props) {
+      try {
+        var properties = props || {};
+        var opacity = properties.opacity || '0';
+        var duration = properties.duration || '0.4s';
+        var timingfunc = properties.timingfunc || 'ease-in-out';
+        this.transition({property:'opacity',duration:duration,timingfunc:timingfunc});
+        this.style({opacity:opacity});
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+      return this;
     }
     find(selectItem) {
       try {
@@ -1177,19 +1199,15 @@ module monads {
       return this;
     }
     rotate(props) {
-      try {
-        var style = [], properties = props || {};
-        properties.x && style.push('rotateX('+properties.x+'deg)');
-        properties.y && style.push(' rotateY('+properties.y+'deg)');
-        properties.z && style.push(' rotateZ('+properties.z+'deg)');
-        style = style.join(' ');
-        if(utilities.Environment.webkit) {
-          this.style({'-webkit-transform':style});
-        } else if(utilities.Environment.firefox) {
-          this.style({'MozTransform':style});
-        }
-      } catch(e) {
-        log.Logger.error(this,e);
+      var style = [], properties = props || {};
+      properties.x && style.push('rotateX('+properties.x+'deg)');
+      properties.y && style.push(' rotateY('+properties.y+'deg)');
+      properties.z && style.push(' rotateZ('+properties.z+'deg)');
+      style = style.join(' ');
+      if(utilities.Environment.webkit) {
+        this.style({'-webkit-transform':style});
+      } else if(utilities.Environment.firefox) {
+        this.style({'MozTransform':style});
       }
       return this;
     }
@@ -1285,6 +1303,22 @@ module monads {
       } 
       return this;
     }
+    shadowlower(event) {
+      try {
+        this.transition({property:'box-shadow',duration:'0.3s',timingfunc:'ease-in-out'});
+        this.shadow();
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+    shadowraise(event) {
+      try {
+        this.transition({property:'box-shadow',duration:'0.3s',timingfunc:'ease-in-out'});
+        this.shadow({horizontal:8,vertical:8,color:'#999'});
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
     show() {
       @monad.element.style.display = 'block';
       return this;
@@ -1309,6 +1343,36 @@ module monads {
         out.height = @monad.element == window ? document.documentElement.clientHeight : @monad.element.clientHeight;
       }
       return out;
+    }
+    slide(props) {
+      try {
+        var properties = props || {};
+        var left = properties.left;
+        var top = properties.top;
+        var width = properties.width;
+        var height = properties.height;
+        var duration = properties.duration || '0.4s';
+        var timingfunc = properties.timingfunc || 'ease-in-out';
+        if(left) {
+          this.transition({property:'left',duration:duration,timingfunc:timingfunc,noprefix:true});
+          this.style({left:left});
+        }
+        if(top) {
+          this.transition({property:'top',duration:duration,timingfunc:timingfunc,noprefix:true});
+          this.style({top:top});
+        }
+        if(width) {
+          this.transition({property:'width',duration:duration,timingfunc:timingfunc,noprefix:true});
+          this.style({width:width});
+        } 
+        if(height) {
+          this.transition({property:'height',duration:duration,timingfunc:timingfunc,noprefix:true});
+          this.style({height:height});
+        }
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+      return this;
     }
     style(styles) {
       if (!!styles) {
@@ -1449,79 +1513,7 @@ module monads {
       }
       return @monad;
     }
-    onfadein(props) {
-      try {
-        var properties = props || {};
-        var opacity = properties.opacity || '1';
-        var duration = properties.duration || '0.4s';
-        var timingfunc = properties.timingfunc || 'ease-in-out';
-        this.transition({property:'opacity',duration:duration,timingfunc:timingfunc});
-        this.style({opacity:opacity});
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
-      return this;
-    }
-    onfadeout(props) {
-      try {
-        var properties = props || {};
-        var opacity = properties.opacity || '0';
-        var duration = properties.duration || '0.4s';
-        var timingfunc = properties.timingfunc || 'ease-in-out';
-        this.transition({property:'opacity',duration:duration,timingfunc:timingfunc});
-        this.style({opacity:opacity});
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
-      return this;
-    }
-    onlower(event) {
-      try {
-        this.transition({property:'box-shadow',duration:'0.3s',timingfunc:'ease-in-out'});
-        this.shadow();
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
-    }
-    onraise(event) {
-      try {
-        this.transition({property:'box-shadow',duration:'0.3s',timingfunc:'ease-in-out'});
-        this.shadow({horizontal:8,vertical:8,color:'#999'});
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
-    }
-    onslide(props) {
-      try {
-        var properties = props || {};
-        var left = properties.left;
-        var top = properties.top;
-        var width = properties.width;
-        var height = properties.height;
-        var duration = properties.duration || '0.4s';
-        var timingfunc = properties.timingfunc || 'ease-in-out';
-        if(left) {
-          this.transition({property:'left',duration:duration,timingfunc:timingfunc,noprefix:true});
-          this.style({left:left});
-        }
-        if(top) {
-          this.transition({property:'top',duration:duration,timingfunc:timingfunc,noprefix:true});
-          this.style({top:top});
-        }
-        if(width) {
-          this.transition({property:'width',duration:duration,timingfunc:timingfunc,noprefix:true});
-          this.style({width:width});
-        } 
-        if(height) {
-          this.transition({property:'height',duration:duration,timingfunc:timingfunc,noprefix:true});
-          this.style({height:height});
-        }
-      } catch(e) {
-        log.Logger.error(this,e);
-      }
-      return this;
-    }
-    onzoomin(props) {
+    zoomin(props) {
       try {
         var properties = props || {};
         var zoom = properties.zoom || '1';
@@ -1534,7 +1526,7 @@ module monads {
       }
       return this;
     }
-    onzoomout(props) {
+    zoomout(props) {
       try {
         var properties = props || {};
         var zoom = properties.zoom || '0';

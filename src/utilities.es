@@ -133,6 +133,7 @@ module utilities {
       return ("#" + hex);
     }
   }
+  export const Color = ColorType();
   export class Stack {
     constructor(obj) {
       private queue, count;
@@ -220,7 +221,6 @@ module utilities {
       return this;
     }
   }
-  export const Color = ColorType();
   class EnvironmentType {
     constructor() {
       private ie, ie6, ie7, ie8, iPad, iPhone, firefox, opera, webkit, rhino;
