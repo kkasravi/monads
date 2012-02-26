@@ -348,7 +348,7 @@ module monads {
       setTimeout(function(){cps.apply(self,vargs);},ms);
       return this;
     }
-    on(evt){
+    on(evt) {
       return @monad && @monad.on && @monad.on(evt);
     }
     unbind(fn, ele, ucap) {
