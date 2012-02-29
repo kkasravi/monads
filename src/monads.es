@@ -348,8 +348,8 @@ module monads {
       setTimeout(function(){cps.apply(self,vargs);},ms);
       return this;
     }
-    on(evt) {
-      return @monad && @monad.on && @monad.on(evt);
+    on(evt, cb) {
+      return @monad && @monad.on && @monad.on(evt, cb);
     }
     unbind(fn, ele, ucap) {
       var unbinder = function(c, f, e, u) {
@@ -375,7 +375,7 @@ module monads {
       @selectors = properties.selectors;      
       @stateTable = {};
     }
-    on(events) {
+    on(events, cb) {
       try {
         events = events instanceof Array ? events : [events];
         if (!@selector && @selectors) {
@@ -388,6 +388,7 @@ module monads {
           } else {
             @continuation = @continuationConstructor({monad:this,event:event});
             @stateTable[event] = @continuation;
+            cb && @continuation.bind(cb);
           }                   
         }
       } catch(e) {
@@ -1064,33 +1065,32 @@ module monads {
       return this;
     }
     place(placement) {
-      try {
-        var x = 0, y = 0, clientWindowWidth, localWindowWidth;
-        switch(placement) {
-          case "random":
-            x = Math.round(Math.random() * (document.documentElement.clientWidth / 2));
-            y = Math.round(Math.random() * (document.documentElement.clientHeight / 3));
-            break;
-         case "top":
-            clientWindowWidth = document.documentElement.clientWidth/2;
-            localWindowWidth = parseInt(this.styleProperty('width'),10)/2;
-            x = clientWindowWidth - localWindowWidth;
-            y = 10;
-            break;
-          default:                        
-          case "center":
-            clientWindowWidth = document.documentElement.clientWidth/2;
-            var clientWindowHeight = document.documentElement.clientHeight/2;
-            localWindowWidth = parseInt(this.styleProperty('width'),10)/2; 
-            var localWindowHeight = parseInt(this.styleProperty('height'),10)/2;
-            x = Math.abs(clientWindowWidth - localWindowWidth);
-            y = Math.abs(clientWindowHeight - localWindowHeight);
-            break;
-        }
-        this.move(x,y);
-      } catch(e) {
-        log.Logger.error(this,e);
+      var x = 0, y = 0, clientWindowWidth, localWindowWidth;
+      switch(placement) {
+        case "random":
+          x = Math.round(Math.random() * (document.documentElement.clientWidth / 2));
+          y = Math.round(Math.random() * (document.documentElement.clientHeight / 3));
+          break;
+       case "top":
+          clientWindowWidth = document.documentElement.clientWidth/2;
+          localWindowWidth = parseInt(this.styleProperty('width'),10)/2;
+          x = clientWindowWidth - localWindowWidth;
+          y = 10;
+          break;
+        default:                        
+        case "center":
+          clientWindowWidth = document.documentElement.clientWidth/2;
+          var clientWindowHeight = document.documentElement.clientHeight/2;
+          localWindowWidth = this.styleProperty('width');
+          localWindowWidth = parseInt(localWindowWidth,10)/2; 
+          var localWindowHeight = this.styleProperty('height');
+          localWindowHeight = parseInt(localWindowHeight,10)/2;
+          x = Math.abs(clientWindowWidth - localWindowWidth);
+          y = Math.abs(clientWindowHeight - localWindowHeight);
+          break;
       }
+      this.move(x,y);
+      return this;
     }        
     pointer(event) {
       return {x: document.all ? event.clientX: event.pageX,y: document.all ? event.clientY: event.pageY};
