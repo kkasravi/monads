@@ -2489,7 +2489,7 @@ module monads {
     addComposable(name, composable) {
       var map = @composablesMap;
       if(!map[name]) {
-        map[name] = @composable;
+        map[name] = composable;
       }
       return this;
     }
