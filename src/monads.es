@@ -1064,6 +1064,9 @@ module monads {
       } 
       return this;
     }
+    parent() {
+      return @monad.element.parentNode;
+    }
     place(placement) {
       var x = 0, y = 0, clientWindowWidth, localWindowWidth;
       switch(placement) {
