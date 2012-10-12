@@ -1137,27 +1137,10 @@ module monads {
       @monad.element.style.backgroundImage = "";
       return this;
     }
-    reflect(image, width, height, rheight) {
-      try {
-        this.element().width = width;
-        this.element().height = rheight;
-        var ctx = this.element().getContext('2d');
-        ctx.save();       
-        ctx.translate(0, height - 1);
-        ctx.scale(1, -1);
-        ctx.drawImage(image, 0, 0, width, height);       
-        ctx.restore();        
-        ctx.globalCompositeOperation = "destination-out";        
-        var gradient = ctx.createLinearGradient(0, 0, 0, rheight);
-        gradient.addColorStop(1, "rgba(255, 255, 255, 1.0)");
-        gradient.addColorStop(0, "rgba(255, 255, 255, 0.5)");        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, rheight);
-      } catch(e) {
-        log.Logger.error(this,e);
-      }  
+    reflect(offset) {
+      @monad.element.style.webkitBoxReflect = 'below ' + offset + '  -webkit-gradient(linear,left top,left bottom,from(transparent),to(rgba(255,255,255,0.25)))';
       return this;
-    }        
+    }
     remove() {
       if(this.element() && this.element().parentNode) {
         this.element().parentNode.removeChild(this.element());  
@@ -1269,6 +1252,18 @@ module monads {
         }
       } else {
         this.style({borderRadius: radius + "px"});
+      }
+      return this;
+    }
+    scale(factor) {
+      try {
+        if(utilities.Environment.webkit) {
+          this.style({'-webkit-transform':'scale('+factor+')'});
+        } else if(utilities.Environment.firefox) {
+          this.style({'MozTransform':'scale('+factor+')'});
+        }
+      } catch(e) {
+        log.Logger.error(this,e);
       }
       return this;
     }
